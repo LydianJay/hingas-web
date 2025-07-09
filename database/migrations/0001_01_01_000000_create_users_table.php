@@ -54,7 +54,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('enrollment_id')->constrained('enrollment')->onDelete('CASCADE');
             $table->time('time_in');
-            $table->time('time_out');
+            $table->time('time_out')->nullable();
             $table->date('date');
         });
 
