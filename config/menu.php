@@ -21,6 +21,22 @@ return [
 
 
     [
+        'menu'      => 'Records',
+        'icon'      => 'fa-solid fa-clipboard-list',
+        'submenu'   => [
+
+            'Attendance' => [
+                'route' => 'attendance'
+            ],
+            
+
+        ],
+
+    ],
+
+
+
+    [
         'menu'      => 'Users',
         'icon'      => 'fa-solid fa-address-card',
         'submenu'   => [

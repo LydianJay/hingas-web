@@ -16,4 +16,8 @@ class DanceSession extends Model
         'time_out',
         'date',
     ];
+
+    public function enrollment() {
+        return $this->belongsTo(Enrollment::class, 'enrollment_id');
+    }
 }

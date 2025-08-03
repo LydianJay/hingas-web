@@ -6,6 +6,7 @@ use App\Models\Enrollment;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -20,6 +21,7 @@ class ESP32API extends Controller
 
 
         if(!$rfid || $rfid == '') {
+            // File::put(storage_path('logs/esp32.log'), Carbon::now()->toDateTimeString() . ' [INVALID RFID] ' . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
             return response()->json(['msg' => 'Invalid RFID'], 400);
         }
 
@@ -30,7 +32,10 @@ class ESP32API extends Controller
         // return response()->json(json_encode($enrollment));
         
         if(!$enrollment || $enrollment == null) {
+            
+            // File::put(storage_path('logs/esp32.log'), Carbon::now()->toDateTimeString() . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
             return response()->json(['msg' => 'No record found!'], 400);
+
         }
 
 
@@ -43,6 +48,7 @@ class ESP32API extends Controller
             
 
             if($dance_ses->time_out != null) {
+                // File::put(storage_path('logs/esp32_attendance.log'), Carbon::now()->toDateTimeString() . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
                 return response()->json(['msg' => 'You already have session for this day'], 400);
             }
 
@@ -61,6 +67,7 @@ class ESP32API extends Controller
             
         }
 
+        
         
 
         return response()->json(['msg' => 'Session Added']);

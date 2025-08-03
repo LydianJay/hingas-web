@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthCtrl;
 use App\Http\Controllers\ESP32API;
 use App\Http\Controllers\Registration;
 use App\Http\Controllers\Dashboard;
-
+use App\Http\Controllers\Records;
 
 Route::get('/', [AuthCtrl::class, 'index'])->name('login');
 
@@ -20,7 +20,7 @@ Route::middleware(['auth:web'])->group(function(){
 
     Route::get('/registration', [Registration::class, 'index'])->name('registration');
     Route::post('/registration/register', [Registration::class, 'register'])->name('register');
-
+    Route::get('/records/attendance', [Records::class, 'attendance'])->name('attendance');
 
 
 
