@@ -13,5 +13,6 @@ class Enrollment extends Model
         'id',
         'user_id',
         'dance_id',
+        'is_active',
     ];
 }

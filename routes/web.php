@@ -7,6 +7,8 @@ use App\Http\Controllers\ESP32API;
 use App\Http\Controllers\Registration;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Records;
+use App\Http\Controllers\Studio;
+
 
 Route::get('/', [AuthCtrl::class, 'index'])->name('login');
 
@@ -21,11 +23,23 @@ Route::middleware(['auth:web'])->group(function(){
     Route::get('/registration', [Registration::class, 'index'])->name('registration');
     Route::post('/registration/register', [Registration::class, 'register'])->name('register');
     Route::post('/registration/edit', [Registration::class, 'edit'])->name('edit_user');
+    Route::post('/registration/enroll', [Registration::class, 'enroll'])->name('enroll');
     Route::get('/records/attendance', [Records::class, 'attendance'])->name('attendance');
 
 
+    Route::get('/dance', [Studio::class, 'dance'])->name('dance');
+
 
     Route::get('/dashboard', [Dashboard::class, 'index'])->name('dashboard');
+
+
+    // =================================================
+    // APIS
+    // =================================================
+    Route::get('/registration/get_enrollment_details', [Registration::class, 'get_enrollment_details'])->name('get_enrollment_details');
+
+    // ==================================================
+
 });
 // =========================================================
 // ESP32API 

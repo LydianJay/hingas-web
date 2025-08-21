@@ -79,6 +79,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
             $table->foreignId('dance_id')->constrained('dance')->onDelete('CASCADE');
+            $table->boolean('is_active')->default(1);
         });
 
         Schema::create('dance_session', function (Blueprint $table) {

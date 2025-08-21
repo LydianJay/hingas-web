@@ -30,7 +30,18 @@
 
                     {{-- First Card --}}
                     <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-sm">
+                        <div class="card h-100 shadow-sm" 
+                            role="button" 
+                            data-id="{{$p1->id}}" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#enroll_modal"
+                            data-fname="{{$p1->fname}}"
+                            data-lname="{{$p1->lname}}"
+                            data-mname="{{$p1->mname}}"
+                            data-photo="{{$p1->photo ? asset('storage/' . $p1->photo) : asset('default-profile.png') }}"
+                            data-enroll={{ $p1->d_name ?? 'None' }}
+                            data-rfid="{{$p1->rfid}}"
+                        >
                             <div class="card-body d-flex align-items-center">
                                 <img src="{{ $p1->photo ? asset('storage/' . $p1->photo) : asset('default-profile.png') }}"
                                     alt="Profile" class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;">
@@ -40,8 +51,8 @@
                                     <p class="mb-0 text-muted">Email: {{ $p1->email }}</p>
                                 </div>
                                 <div class="ms-2 text-end">
-                                    @if ($p1->enrollment_id)
-                                        <span class="badge bg-success mb-1">Enrolled</span><br>
+                                    @if ($p1->e_id)
+                                        <span class="badge bg-success mb-1">{{ucfirst($p1->d_name)}}</span><br>
                                     @endif
                                     <a href="" class="text-primary me-2 text-decoration-none"
                                         data-bs-toggle="modal" 
@@ -73,7 +84,18 @@
                     {{-- Second Card (if exists) --}}
                     @if ($p2)
                         <div class="col-md-6 mb-4">
-                            <div class="card h-100 shadow-sm">
+                            <div class="card h-100 shadow-sm"
+                                role="button" 
+                                data-id="{{$p2->id}}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#enroll_modal"
+                                data-fname="{{$p2->fname}}"
+                                data-lname="{{$p2->lname}}"
+                                data-mname="{{$p2->mname}}"
+                                data-photo="{{$p2->photo ? asset('storage/' . $p2->photo) : asset('default-profile.png') }}"
+                                data-enroll={{$p2->d_name ?? 'None'}}
+                                data-rfid="{{$p2->rfid}}"
+                            >
                                 <div class="card-body d-flex align-items-center">
                                     <img src="{{ $p2->photo ? asset('storage/' . $p2->photo) : asset('default-profile.png') }}"
                                         alt="Profile" class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;">
@@ -83,8 +105,8 @@
                                         <p class="mb-0 text-muted">Email: {{ $p2->email }}</p>
                                     </div>
                                     <div class="ms-2 text-end">
-                                        @if ($p2->enrollment_id)
-                                            <span class="badge bg-success mb-1">Enrolled</span><br>
+                                        @if ($p2->e_id)
+                                            <span class="badge bg-success mb-1">{{ucfirst($p1->d_name)}}</span><br>
                                         @endif
                                         <a class="text-primary me-2 text-decoration-none" 
                                             data-bs-toggle="modal" 
@@ -302,6 +324,76 @@
     </x-dashboard.modalform>
 
 
+
+
+    <x-dashboard.modalform 
+        route="enroll" 
+        modal_size="modal-lg" 
+        id="enroll_modal" 
+        title="Enrollment"
+        btn_text="Enroll"
+        btn_id="modal-form-btn"
+    >
+
+        <div class="card shadow-lg border-0 rounded-3 p-3" style="max-width: 600px; margin:auto; background:#f8f9fa;">
+            <div class="row g-3 align-items-center">
+                
+                <!-- Photo Left -->
+                <div class="col-md-4 text-center">
+                    <img id="e-photo" src="" alt="Student Photo" 
+                        class="img-thumbnail border border-3 border-primary rounded"
+                        style="width:150px; height:180px; object-fit:cover;">
+                </div>
+
+                <!-- Details Right -->
+                <div class="col-md-8">
+                    <h5 class="fw-bold mb-1">
+                        <span id="e-fname"></span> 
+                        <span id="e-mname"></span> 
+                        <span id="e-lname"></span>
+                    </h5>
+                    
+
+                    <div class="mb-1">
+                        <span class="fw-semibold">RFID:</span>
+                        <span id="e-rfid"></span>
+                    </div>
+
+                    <hr>
+
+                    <p class="small text-secondary mb-0">HINGAS Life Style Studio</p>
+                    <p class="small text-secondary mb-0">Client Information</p>
+                    <span class="badge bg-success mt-1" id="e-enroll">Enrolled</span>
+                </div>
+            </div>
+            <div class="row my-2" id="enrollment-form">
+                <label for="" class="form-label mt-2 mb-0">Dance</label>
+                <input type="text" name="id" hidden id="e-id" value="">
+                <div class="input-group mb-2">
+                    <select name="dance" class="form-control">
+                        @foreach ($dances as $dance)
+                            <option value="{{$dance->id}}">{{$dance->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <label for="" class="form-label mt-2 mb-0">Initial Payment</label>
+
+                <div class="input-group mb-2">
+                    <input type="number" class="form-control" step="0.2" name="payment" value="0">
+                </div>
+                
+            </div>
+
+
+            {{-- Add an enrollment inputs --}}
+            {{-- Dance Class Select --}}
+
+            
+        </div>
+    
+    
+    </x-dashboard.modalform>
+
     
 
     <script>
@@ -332,7 +424,65 @@
 
                 
             });
-        
+            
+
+            document.getElementById('enroll_modal').addEventListener('show.bs.modal', function (e){
+                let btn         = e.relatedTarget;
+                let attributes  = [
+                                    'rfid',
+                                    'fname',
+                                    'lname',
+                                    'mname',
+                                    'id',
+                                    'photo',
+                                    'enroll',
+                                ]; 
+
+                attributes.forEach(attr => {
+                    let el = document.getElementById('e-' + attr);
+
+                    if(attr === 'photo') {
+                        el.src = btn.getAttribute('data-' + attr); 
+                    } 
+                    else if (attr === 'id') {
+                        el.value = btn.getAttribute('data-' + attr);
+                        // console.log(el.value, btn.getAttribute('data-' + attr));
+                    }
+                    else if(attr == 'enroll'){
+                        el.innerText = btn.getAttribute('data-' + attr);
+                    }
+                    else {
+                        el.innerText = btn.getAttribute('data-' + attr) || '—';
+                    }
+                });
+
+                let route = "{{ route('get_enrollment_details') }}?id=" + btn.getAttribute('data-id');
+                console.log(route);
+                fetch(route, {
+                    method: 'get',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let submit_btn = document.getElementById('modal-form-btn');
+
+                    if(data.enrollment != null) {
+                        submit_btn.disabled = true;
+                        document.getElementById('enrollment-form').classList.add('d-none');
+
+                    } else {
+                        document.getElementById('enrollment-form').classList.remove('d-none');
+
+                        submit_btn.disabled = false;
+                    }
+                    
+
+                })
+                .catch(error => {
+                    console.error(error.message);
+                });
+                
+            });
+            
 
 
         });

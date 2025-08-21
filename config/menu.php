@@ -29,7 +29,6 @@ return [
                 'route' => 'attendance'
             ],
             
-
         ],
 
     ],
@@ -43,6 +42,21 @@ return [
 
             'Enrollee' => [
                 'route' => 'registration'
+            ],
+            
+
+        ],
+
+    ],
+
+
+    [
+        'menu'      => 'Studio',
+        'icon'      => 'fas fa-person-running',
+        'submenu'   => [
+
+            'Dance' => [
+                'route' => 'dance'
             ],
             
 

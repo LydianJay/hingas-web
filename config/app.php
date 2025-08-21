@@ -14,7 +14,7 @@ return [
     */
 
     'name'      => env('APP_NAME', 'Laravel'),
-    'app_title' => 'RFID Entrance System',
+    'app_title' => 'HINGAS Life Style Studio',
     'version'   => '[BETA] Rev 1.0 (July 2025)',
 
     /*

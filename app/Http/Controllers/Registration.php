@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payments;
 use App\Models\User;
 use App\Models\Dance;
+use App\Models\DanceSession;
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -24,6 +29,8 @@ class Registration extends Controller
         $data['dances'] = Dance::all();
 
         $data['users']  = User::leftJoin('admin', 'admin.id', '=', 'users.id')
+                        ->leftJoin('enrollment', 'enrollment.id', '=', 'users.id')
+                        ->leftJoin('dance', 'dance.id', '=', 'enrollment.dance_id')
                         ->when($search, function ($query) use ($search) {
                             $query->where(function ($subquery) use ($search) {
                                 $subquery->where('users.fname', 'LIKE', '%' . $search . '%')
@@ -31,8 +38,12 @@ class Registration extends Controller
                             });
                         })
                         ->whereNull('admin.user_id')
-                        ->select('users.*')
+                        ->offset(($page - 1) * $perPage)
+                        ->limit($perPage)
+                        ->select(['users.*', 'enrollment.id as e_id', 'dance.name as d_name'])
                         ->get();
+        // dd($data['users']);
+
 
         
         $data['page']           = $page;
@@ -156,7 +167,7 @@ class Registration extends Controller
             if(!$user) {
                 DB::rollBack();
                 return redirect()
-                        ->back()
+                ->route('registration')
                         ->with('status', [
                     'alert' => 'alert-danger',
                     'msg'   => 'Invalid user!',
@@ -188,7 +199,7 @@ class Registration extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('status', [
+            return redirect()->route('registration')->with('status', [
                 'alert' => 'alert-success',
                 'msg'   => 'User data edited!',
             ]);
@@ -204,4 +215,119 @@ class Registration extends Controller
         }
 
     }
+
+
+
+    public function enroll(Request $request) {
+
+
+        
+
+        $validated      = $request->validate([
+                            'id'        => 'required', // User id
+                            'dance'     => 'required',
+                            'amount'    => 'nullable' // initial payment
+                        ]);
+        
+        
+        
+        // Check if already enrolled
+        $enrolled   = Enrollment::where('user_id', $validated['id'])
+                    ->where('dance_id', $validated['dance'])
+                    ->where('is_active', 1)
+                    ->exists();
+
+        if($enrolled) {
+            return redirect()->route('registration')->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => 'Already enrolled!',
+            ]);
+        }
+
+        db::beginTransaction();
+
+        try {
+
+            $enrollment = Enrollment::create([
+                'dance_id'  => $validated['dance'],
+                'user_id'   => $validated['id'],
+            ]);
+    
+    
+            if(isset($validated['amount']) && $validated['amount'] > 0.00) {
+                Payments::create([
+                    'enrollment_id' => $enrollment->id,
+                    'admin_id'      => Auth::user()->id,
+                    'user_id'       => $validated['id'],
+                    'amount'        => $validated['amount'],
+                ]);
+    
+            }
+
+            
+
+        } catch(Throwable $e) {
+            db::rollBack();
+            return redirect()->route('registration')->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => $e->getMessage(),
+            ]);
+        }
+
+
+        db::commit();
+        return redirect()->route('registration')->with('status', [
+            'alert' => 'alert-success',
+            'msg'   => 'User enrolled!',
+        ]);
+        
+        
+
+    }
+
+    // ============== API ==========================
+
+
+    public function get_enrollment_details(Request $request) {
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required'
+        ]);
+
+
+
+        if($validator->fails()) {
+            return response()
+            ->json(['msg' => 'ERROR could not find the user'], 404);
+        }
+
+        $id = $request->input('id');
+        
+
+        $enrollment     = Enrollment::where('user_id', $id)
+                        ->where('is_active', 1)
+                        ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
+                        ->first();
+
+                        
+
+        
+
+        $sessions       = null;
+
+        if($enrollment) {
+
+            $sessions = DanceSession::where('enrollment_id', $enrollment->id)->get();
+        }
+        
+
+
+        return response()->json([
+            'enrollment'    => $enrollment,
+            'sessions'      => $sessions,
+        ]);
+
+
+    }
+
 }
