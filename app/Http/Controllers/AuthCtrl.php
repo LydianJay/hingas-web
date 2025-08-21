@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 class AuthCtrl extends Controller
 {
@@ -14,7 +15,7 @@ class AuthCtrl extends Controller
     }
 
     public function login(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'email'     => 'required|email',
             'password'  => 'required',
         ]);
@@ -29,10 +30,28 @@ class AuthCtrl extends Controller
         // dd( Hash::check( $request->password, $user->password),  $user->password, bcrypt('@default_123'), $request->password);
 
 
+        $user = User::where('email', $validated['email'])->first();
+
+
+        if(!$user) {
+            return redirect()
+            ->route('login')
+            ->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => 'User does not exist!',
+            ]);
+        }
+
+
+        $admin  = Admin::where('user_id', $user->id)
+                ->first();
+
+        $r      = Hash::check( $validated['password'], $admin->password);
 
 
 
-        if (Auth::attempt($credentials)) {
+        if ($r) {
+            Auth::login($admin);
             $request->session()->regenerate();
             
             
@@ -42,7 +61,7 @@ class AuthCtrl extends Controller
 
         return redirect()->back()->with('status', [
             'alert' => 'alert-danger',
-            'msg' => 'Invalid email or password',
+            'msg'   => 'Invalid email or password',
         ]);
         
 

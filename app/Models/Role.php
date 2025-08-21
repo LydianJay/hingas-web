@@ -4,16 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Dance extends Model
+class Role extends Model
 {
-    public $table = 'dance';
+    public $table = 'role';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'name',
-        'session_count',
-        'price',
+        'user_id',
+        'role_name',
     ];
-
 }

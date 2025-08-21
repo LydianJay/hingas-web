@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Admin;
 use App\Models\Dance;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,24 +18,34 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::create([
-            
-            'email'     => 'admin@example.com',
-            'password'  => bcrypt('@default123'),
+        $user = User::create([
             'fname'     => 'System',
             'mname'     => '',
             'lname'     => 'Admin',
-            'contactno' => '1234567890',
+            'gender'    => 'other',
             'dob'       => Carbon::now()->format('Y-m-d'),
-            'is_admin'  => true,
-            ]
-        );
+            'contactno' => '09123456789',
+            'email'     => 'admin@example.com',
+        ]);
+
+        $role = Role::create([
+            'user_id'       => $user->id,
+            'role_name'     => 'System Admin',
+        ]);
+
+        Admin::create([
+            'user_id'       => $user->id,
+            'password'      => bcrypt('@default123'),
+            'role_id'       => $role->id,
+        ]);
 
         $dances = ['Ballet', 'Modern Dance', 'Folk Dance', 'Gymnastics', 'Hip-Hop'];
 
         foreach($dances as $dance) {
             Dance::create([
-                'name' => $dance
+                'name'          => $dance,
+                'session_count' => 8,
+                'price'         => 2500,
             ]);
         }
     }

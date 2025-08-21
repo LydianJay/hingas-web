@@ -16,27 +16,43 @@ class Registration extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search     = $request->input('search');
+        $page       = $request->input('page', 1);
+        $perPage    = 12;
+
 
         $data['dances'] = Dance::all();
 
-        $data['users']  = User::leftJoin('enrollment', 'enrollment.user_id', '=', 'users.id')
+        $data['users']  = User::leftJoin('admin', 'admin.id', '=', 'users.id')
                         ->when($search, function ($query) use ($search) {
                             $query->where(function ($subquery) use ($search) {
                                 $subquery->where('users.fname', 'LIKE', '%' . $search . '%')
                                         ->orWhere('users.lname', 'LIKE', '%' . $search . '%');
                             });
                         })
-                        ->leftJoin('dance', 'dance.id', '=', 'enrollment.dance_id')
-                        ->where('is_admin', false)
+                        ->whereNull('admin.user_id')
+                        ->select('users.*')
                         ->get();
+
+        
+        $data['page']           = $page;
+        $data['perPage']        = $perPage;
+        $data['count']          = User::leftJoin('admin', 'admin.id', '=', 'users.id')
+                                ->whereNull('admin.user_id')
+                                ->count();
+
+        
+
+        $data['totalPages']         = ceil($data['count'] / $perPage);
+        $data['search']             = $search;
+
 
         return view('pages.registration.view', $data);
     }
 
     public function register(Request $request) {
         $validated = $request->validate([
-            'rfid'           => 'required|string',
+            'rfid'           => 'nullable|string',
             'email'          => 'required|email|unique:users,email',
             'fname'          => 'required|string|max:100',
             'mname'          => 'nullable|string|max:100',
@@ -45,12 +61,9 @@ class Registration extends Controller
             'dob'            => 'required|date|before:today',
             'contactno'      => 'nullable|string|max:20',
             'address'        => 'nullable|string|max:255',
-            'is_active'      => 'nullable|boolean',
             'e_contact'      => 'nullable|string|max:100',
             'e_contact_no'   => 'nullable|string|max:20',
-            'dance'          => 'required',
             'photo'          => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-            'password'       => 'required|string|min:8|confirmed', // add `password_confirmation` input if using confirmed
         ]);
 
 
@@ -66,9 +79,8 @@ class Registration extends Controller
                 $photoPath = $request->file('photo')->store('photos', 'public');
             }
 
-            assert($validated['rfid'] != null && $validated['rfid'] != '' && isEmpty($validated['rfid']), 'rfid is invalid');
             // Create the user
-            $user = User::create([
+            User::create([
                 'rfid'            => $validated['rfid'],
                 'email'           => $validated['email'],
                 'fname'           => $validated['fname'],
@@ -78,26 +90,19 @@ class Registration extends Controller
                 'dob'             => $validated['dob'],
                 'contactno'       => $validated['contactno'],
                 'address'         => $validated['address'],
-                'is_active'       => true,
                 'e_contact'       => $validated['e_contact'],
                 'e_contact_no'    => $validated['e_contact_no'],
                 'photo'           => $photoPath,
-                'password'        => bcrypt($validated['password']),
             ]);
 
-            // dd($user);
-
-            Enrollment::create([
-                'dance_id'  => $validated['dance'],
-                'user_id'   => $user->id,
-            ]);
+           
 
 
             DB::commit();
 
             return redirect()->back()->with('status', [
                 'alert' => 'alert-success',
-                'msg'   => 'User Enrolled!',
+                'msg'   => 'User data added!',
             ]);
 
 
@@ -111,6 +116,92 @@ class Registration extends Controller
         }
 
         
+
+    }
+
+
+    public function edit(Request $request) {
+
+
+        $validated = $request->validate([
+            'id'             => 'required',
+            'rfid'           => 'nullable|string',
+            'email'          => 'required|email',
+            'fname'          => 'required|string|max:100',
+            'mname'          => 'nullable|string|max:100',
+            'lname'          => 'required|string|max:100',
+            'gender'         => 'required|in:male,female,other',
+            'dob'            => 'required|date|before:today',
+            'contactno'      => 'nullable|string|max:20',
+            'address'        => 'nullable|string|max:255',
+            'e_contact'      => 'nullable|string|max:100',
+            'e_contact_no'   => 'nullable|string|max:20',
+            'photo'          => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
+        ]);
+
+
+
+        DB::beginTransaction();
+
+        try {
+
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('photos', 'public');
+            }
+
+            // Create the user
+            $user = User::find($validated['id']);
+           
+            if(!$user) {
+                DB::rollBack();
+                return redirect()
+                        ->back()
+                        ->with('status', [
+                    'alert' => 'alert-danger',
+                    'msg'   => 'Invalid user!',
+                ]);
+            }
+
+
+            $user->update([
+                'rfid'            => $validated['rfid'],
+                'email'           => $validated['email'],
+                'fname'           => $validated['fname'],
+                'mname'           => $validated['mname'],
+                'lname'           => $validated['lname'],
+                'gender'          => $validated['gender'],
+                'dob'             => $validated['dob'],
+                'contactno'       => $validated['contactno'],
+                'address'         => $validated['address'],
+                'e_contact'       => $validated['e_contact'],
+                'e_contact_no'    => $validated['e_contact_no'],
+            ]);
+
+            if($photoPath) {
+                $user->update(['photo' => $photoPath]);
+            }
+            
+
+            
+
+
+            DB::commit();
+
+            return redirect()->back()->with('status', [
+                'alert' => 'alert-success',
+                'msg'   => 'User data edited!',
+            ]);
+
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => $e->getMessage(),
+            ]);
+
+        }
 
     }
 }

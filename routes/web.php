@@ -20,6 +20,7 @@ Route::middleware(['auth:web'])->group(function(){
 
     Route::get('/registration', [Registration::class, 'index'])->name('registration');
     Route::post('/registration/register', [Registration::class, 'register'])->name('register');
+    Route::post('/registration/edit', [Registration::class, 'edit'])->name('edit_user');
     Route::get('/records/attendance', [Records::class, 'attendance'])->name('attendance');
 
 

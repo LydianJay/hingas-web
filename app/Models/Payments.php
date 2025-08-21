@@ -4,16 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Dance extends Model
+class Payments extends Model
 {
-    public $table = 'dance';
+    public $table = 'payments';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'name',
-        'session_count',
-        'price',
+        'user_id',
+        'admin_id',
+        'amount',
     ];
-
 }

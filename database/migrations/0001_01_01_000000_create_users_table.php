@@ -25,24 +25,55 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('e_contact')->nullable()->default(null);
             $table->string('e_contact_no')->nullable()->default(null);
-            $table->timestamp('email_verified_at')->nullable()->default(null);
             $table->string('photo')->nullable()->default(null);
-            $table->string('password');
-            $table->boolean('is_admin')->default(false);
-            $table->rememberToken()->nullable()->default(null); 
-            $table->timestamps();
+            
+        }); 
+
+
+        Schema::create('role', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
+            $table->string('role_name');
+
         });
 
 
-        Schema::create('admin', function (Blueprint $table) {
+        
+
+        Schema::create('modules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
+            $table->string('module_name');
+            $table->string('icon');
+        });
+
+        Schema::create('sub_modules', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('module_id')->constrained('modules')->onDelete('CASCADE');
+            $table->string('subm_name');
+            $table->string('route');
+        });
+
+        Schema::create('role_subm', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('subm_id')->constrained('sub_modules')->onDelete('CASCADE');
+            $table->foreignId('role_id')->constrained('role')->onDelete('CASCADE');
         });
 
         Schema::create('dance', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('session_count')->default(1);
+            $table->float('price')->default(1.0);
         });
+
+
+        Schema::create('admin', function (Blueprint $table) {
+            $table->id();
+            $table->string('password');
+            $table->foreignId('user_id')->constrained('users')->onDelete('CASCADE');
+            $table->foreignId('role_id')->constrained('role');
+        }); 
+
 
         Schema::create('enrollment', function (Blueprint $table) {
             $table->id();
@@ -58,12 +89,7 @@ return new class extends Migration
             $table->date('date');
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-
+       
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -71,6 +97,14 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
+        });
+
+
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('admin_id')->constrained('admin');
+            $table->foreignId('user_id')->constrained('users');
+            $table->float('amount');
         });
     }
 
@@ -80,7 +114,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
+        
         Schema::dropIfExists('sessions');
     }
 };

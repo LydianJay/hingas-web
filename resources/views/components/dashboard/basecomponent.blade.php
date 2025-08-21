@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.app_title') }}</title>
-    <link rel="shortcut icon" href="{{ asset('assets/school_content/admin_small_logo/1.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo/logo-white.png') }}" type="image/x-icon">
 
     <!-- Bootstrap & FontAwesome -->
     <link href="{{ asset('assets/bootstrap/css/bootstrap_custom.css') }}" rel="stylesheet">
@@ -70,7 +70,7 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg sticky-top shadow-sm px-3" style="background-color: var(--bs-skin-blue);">
             <div class="d-flex align-items-center">
-                <img src="{{ asset('assets/school_content/admin_logo/1.png') }}" alt="logo" style="width: 60px;">
+                <img src="{{ asset('assets/img/logo/logo-white.png') }}" alt="logo" style="width: 60px;">
                 <h5 class="text-white mb-0 ms-3">{{ config('app.app_title') }}</h5>
             </div>
             <div class="ms-auto d-flex align-items-center">
