@@ -38,6 +38,7 @@ class Registration extends Controller
                             });
                         })
                         ->whereNull('admin.user_id')
+                        ->where('users.is_active', 1)
                         ->offset(($page - 1) * $perPage)
                         ->limit($perPage)
                         ->select(['users.*', 'enrollment.id as e_id', 'dance.name as d_name'])
@@ -50,6 +51,7 @@ class Registration extends Controller
         $data['perPage']        = $perPage;
         $data['count']          = User::leftJoin('admin', 'admin.id', '=', 'users.id')
                                 ->whereNull('admin.user_id')
+                                ->where('users.is_active', 1)
                                 ->count();
 
         
@@ -285,6 +287,30 @@ class Registration extends Controller
 
     }
 
+    public function delete_user(Request $request) {
+        $validated = $request->validate([
+            'id'    => 'required'
+        ]);
+
+
+        $user = User::find($validated['id']);
+
+        if(!$user) {
+            return redirect()->route('registration')->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => 'Invalid user',
+            ]);
+        }
+
+        $user->is_active = 0;
+        $user->save();
+
+        return redirect()->route('registration')->with('status', [
+            'alert' => 'alert-warning',
+            'msg'   => 'User deleted!',
+        ]);
+    }
+
     // ============== API ==========================
 
 
@@ -305,13 +331,20 @@ class Registration extends Controller
         
 
         $enrollment     = Enrollment::where('user_id', $id)
-                        ->where('is_active', 1)
+                        ->where('enrollment.is_active', 1)
                         ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
                         ->first();
+        $paid           = Enrollment::where('enrollment.user_id', $id)
+                        ->leftJoin('payments', 'payments.enrollment_id', '=', 'enrollment.id')
+                        ->sum('amount');
 
+        $fee_amount      = Enrollment::where('enrollment.user_id', $id)
+                        ->leftJoin('dance', 'dance.id', '=', 'enrollment.dance_id')
+                        ->sum('price');
                         
+       
 
-        
+        $balance        = $fee_amount - $paid;
 
         $sessions       = null;
 
@@ -325,6 +358,7 @@ class Registration extends Controller
         return response()->json([
             'enrollment'    => $enrollment,
             'sessions'      => $sessions,
+            'balance'       => $balance,
         ]);
 
 

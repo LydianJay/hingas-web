@@ -14,6 +14,13 @@ class Dance extends Model
         'name',
         'session_count',
         'price',
+        'is_active',
     ];
 
+
+
+    public static function getPrice($id) {
+        $dance = self::find($id);
+        return $dance ? 0 : $dance->price;
+    }
 }

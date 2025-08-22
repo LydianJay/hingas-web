@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('e_contact')->nullable()->default(null);
             $table->string('e_contact_no')->nullable()->default(null);
             $table->string('photo')->nullable()->default(null);
-            
         }); 
 
 
@@ -64,6 +63,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('session_count')->default(1);
             $table->float('price')->default(1.0);
+            $table->boolean('is_active')->default(true);
         });
 
 
@@ -103,8 +103,8 @@ return new class extends Migration
 
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('enrollment_id')->constrained('enrollment');
             $table->foreignId('admin_id')->constrained('admin');
-            $table->foreignId('user_id')->constrained('users');
             $table->float('amount');
         });
     }

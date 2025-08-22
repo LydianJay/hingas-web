@@ -11,8 +11,8 @@ class Payments extends Model
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'user_id',
         'admin_id',
         'amount',
+        'enrollment_id'
     ];
 }

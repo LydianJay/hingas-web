@@ -24,10 +24,14 @@ Route::middleware(['auth:web'])->group(function(){
     Route::post('/registration/register', [Registration::class, 'register'])->name('register');
     Route::post('/registration/edit', [Registration::class, 'edit'])->name('edit_user');
     Route::post('/registration/enroll', [Registration::class, 'enroll'])->name('enroll');
+    Route::post('/registration/delete_user', [Registration::class, 'delete_user'])->name('delete_user');
     Route::get('/records/attendance', [Records::class, 'attendance'])->name('attendance');
 
 
     Route::get('/dance', [Studio::class, 'dance'])->name('dance');
+    Route::post('/dance/create_dance', [Studio::class, 'create_dance'])->name('create_dance');
+    Route::post('/dance/edit_dance', [Studio::class, 'edit_dance'])->name('edit_dance');
+    Route::post('/dance/delete_dance', [Studio::class, 'delete_dance'])->name('delete_dance');
 
 
     Route::get('/dashboard', [Dashboard::class, 'index'])->name('dashboard');

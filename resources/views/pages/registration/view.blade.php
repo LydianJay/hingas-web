@@ -72,8 +72,7 @@
                                     >
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    <a student_id="{{ $p1->id }}" data-bs-toggle="modal" data-bs-target="#confirm_delete_modal"
-                                        id="delete_btn_{{ $p1->id }}" href="#" class="text-danger">
+                                    <a data-id="{{ $p1->id }}" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="text-danger">
                                         <i class="fa-solid fa-trash"></i>
                                     </a>
                                 </div>
@@ -126,8 +125,8 @@
                                         >
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
-                                        <a student_id="{{ $p2->id }}" data-bs-toggle="modal" data-bs-target="#confirm_delete_modal"
-                                            id="delete_btn_{{ $p2->id }}" href="#" class="text-danger">
+                                        <a data-id="{{ $p2->id }}" data-bs-toggle="modal" data-bs-target="#confirm-delete"
+                                          class="text-danger">
                                             <i class="fa-solid fa-trash"></i>
                                         </a>
                                     </div>
@@ -330,7 +329,7 @@
         route="enroll" 
         modal_size="modal-lg" 
         id="enroll_modal" 
-        title="Enrollment"
+        title="Enrollee Information"
         btn_text="Enroll"
         btn_id="modal-form-btn"
     >
@@ -364,6 +363,7 @@
                     <p class="small text-secondary mb-0">HINGAS Life Style Studio</p>
                     <p class="small text-secondary mb-0">Client Information</p>
                     <span class="badge bg-success mt-1" id="e-enroll">Enrolled</span>
+                    <p class="small text-danger mb-0">Amount balance: ₱<span id="balance">0</span> </p>
                 </div>
             </div>
             <div class="row my-2" id="enrollment-form">
@@ -394,6 +394,33 @@
     
     </x-dashboard.modalform>
 
+
+
+    <x-dashboard.modalform 
+        route="delete_user" 
+        modal_size="modal-lg" 
+        id="confirm-delete" 
+        title="Remove User" 
+        btn_text="Confirm"
+        btn_id="modal-delete-btn"
+    >
+        <input type="hidden" name="id" id="delete-id">
+
+        <div class="card-body py-5 text-center">
+            <div class="mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-danger fs-1"></i>
+            </div>
+            <h4 class="card-title mb-2 text-danger">This Action is Irreversible</h4>
+            <p class="card-text text-muted">
+                You are about to remove this user from this system
+            </p>
+            <p class="card-text text-muted">
+                Please confirm that you fully understand the impact of this action. Proceed only if you are absolutely sure.
+            </p>
+        </div>
+
+
+    </x-dashboard.modalform>
     
 
     <script>
@@ -464,11 +491,11 @@
                 .then(response => response.json())
                 .then(data => {
                     let submit_btn = document.getElementById('modal-form-btn');
-
+                    console.log(data);
                     if(data.enrollment != null) {
                         submit_btn.disabled = true;
                         document.getElementById('enrollment-form').classList.add('d-none');
-
+                        document.getElementById('balance').innerText = data.balance;
                     } else {
                         document.getElementById('enrollment-form').classList.remove('d-none');
 
@@ -484,6 +511,11 @@
             });
             
 
+
+            document.getElementById('confirm-delete').addEventListener('show.bs.modal', function (e){
+                let btn = e.relatedTarget;
+                document.getElementById('delete-id').value = btn.getAttribute('data-id');
+            });
 
         });
 
