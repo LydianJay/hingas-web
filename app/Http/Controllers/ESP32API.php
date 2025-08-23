@@ -84,7 +84,7 @@ class ESP32API extends Controller
                 return response()
                 ->json([
                     'msg' => 'You already have session for this day'
-                ], 400);
+                ], 406);
             }
 
 

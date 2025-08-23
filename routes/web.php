@@ -25,6 +25,8 @@ Route::middleware(['auth:web'])->group(function(){
     Route::post('/registration/edit', [Registration::class, 'edit'])->name('edit_user');
     Route::post('/registration/enroll', [Registration::class, 'enroll'])->name('enroll');
     Route::post('/registration/delete_user', [Registration::class, 'delete_user'])->name('delete_user');
+    Route::post('/registration/collect_fee', [Registration::class, 'collect_fee'])->name('collect_fee');
+   
     Route::get('/records/attendance', [Records::class, 'attendance'])->name('attendance');
 
 

@@ -13,6 +13,7 @@ class Payments extends Model
         'id',
         'admin_id',
         'amount',
-        'enrollment_id'
+        'enrollment_id',
+        'date',
     ];
 }

@@ -72,7 +72,11 @@ class AuthCtrl extends Controller
         session()->invalidate();
         session()->regenerate();
 
-        return redirect()->route('home');
+        return redirect()
+        ->route('login')->with('status', [
+            'alert' => 'alert-info',
+            'msg'   => 'User Logged Out!',
+        ]);
     }
 
 

@@ -10,6 +10,9 @@
     <!-- Bootstrap & FontAwesome -->
     <link href="{{ asset('assets/bootstrap/css/bootstrap_custom.css') }}" rel="stylesheet">
     <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.js"
+        integrity="sha512-D4pL3vNgjkHR/qq+nZywuS6Hg1gwR+UzrdBW6Yg8l26revKyQHMgPq9CLJ2+HHalepS+NuGw1ayCCsGXu9JCXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css">
@@ -82,7 +85,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
                         <li>
-                            <form method="POST" action="">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item">
                                     <i class="fa fa-sign-out-alt me-2"></i> Sign Out

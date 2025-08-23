@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
-
+use Carbon\Carbon;
 use function PHPUnit\Framework\isEmpty;
 
 class Registration extends Controller
@@ -287,6 +287,76 @@ class Registration extends Controller
 
     }
 
+
+
+    public function collect_fee(Request $request) {
+        $validated      = $request->validate([
+            'id'        => 'required', 
+            'amount'    => 'required' 
+        ]);
+        
+
+        $enrolled  = Enrollment::where('enrollment.user_id', $validated['id'])
+                    ->leftJoin('payments', 'payments.enrollment_id', '=', 'enrollment.id')
+                    ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
+                    ->select(
+                        'enrollment.id as enrollment_id',
+                        DB::raw('COALESCE(SUM(payments.amount), 0) as total_paid'),
+                        'dance.price as dance_price'
+                    )
+                    ->groupBy('enrollment.id', 'dance.price')
+                    ->havingRaw('total_paid < dance_price')
+                    ->first();
+
+        if(!$enrolled) {
+            return redirect()
+            ->route('registration')
+            ->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => 'Your dont have fees!!!',
+            ]);
+        }
+
+        db::beginTransaction();
+
+        try {
+
+      
+
+        if(isset($validated['amount']) && $validated['amount'] > 0.00) {
+
+            Payments::create([
+                'enrollment_id' => $enrolled->enrollment_id,
+                'admin_id'      => Auth::user()->id,
+                'user_id'       => $validated['id'],
+                'amount'        => $validated['amount'],
+                'date'          => Carbon::now()->toDateString(),
+            ]);
+
+        }
+
+
+
+        } catch(Throwable $e) {
+            db::rollBack();
+            return redirect()->route('registration')->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => $e->getMessage(),
+            ]);
+        }
+
+        $amount = $validated['amount'];
+        db::commit();
+        return redirect()
+        ->route('registration')
+        ->with('status', [
+            'alert' => 'alert-success',
+            'msg'   => "Client paid $amount!",
+        ]);
+
+
+    }
+
     public function delete_user(Request $request) {
         $validated = $request->validate([
             'id'    => 'required'
@@ -364,4 +434,7 @@ class Registration extends Controller
 
     }
 
+
+
+    
 }

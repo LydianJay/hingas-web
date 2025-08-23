@@ -346,11 +346,26 @@
 
                 <!-- Details Right -->
                 <div class="col-md-8">
-                    <h5 class="fw-bold mb-1">
-                        <span id="e-fname"></span> 
-                        <span id="e-mname"></span> 
-                        <span id="e-lname"></span>
-                    </h5>
+                    <div class="d-flex flex-row justify-content-between align-items-center">
+                        <div class="mx-1">
+                            <h5 class="fw-bold mb-1">
+                        
+                                <span id="e-fname"></span>
+                                <span id="e-mname"></span>
+                                <span id="e-lname"></span>
+                            </h5>
+                        
+                        </div>
+                        
+                        <button type="button" class="btn-sm btn btn-primary"
+                        id="collect-fee-btn" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#collect-fee">
+                        Collect Fee
+                    </button>
+
+                    </div>
+                        
                     
 
                     <div class="mb-1">
@@ -396,6 +411,40 @@
 
 
 
+    {{-- Collect Fee --}}
+
+    <x-dashboard.modalform route="collect_fee" modal_size="modal-lg" id="collect-fee" title="Collect Fee"
+        btn_text="Collect" btn_id="collect-modal-form-btn">
+    
+        <div class="card shadow-lg border-0 rounded-3 p-3" style="max-width: 600px; margin:auto; background:#f8f9fa;">
+            <div class="row g-3 align-items-center">
+    
+                <!-- Photo Left -->
+                <div class="col-md-4 text-center">
+                    <img id="collect-photo" src="" alt="Student Photo"
+                        class="img-thumbnail border border-3 border-primary rounded"
+                        style="width:150px; height:180px; object-fit:cover;">
+                </div>
+    
+                <!-- Details Right -->
+                <div class="col-md-8">
+                    <h5 class="modal-title">Collections</h5>
+                    <input type="hidden" name="id" id="collect-payment-id">
+                    <label for="" class="form-label mt-2 mb-0">Payment</label>
+                    <div class="input-group mb-2">
+                        <input type="number" class="form-control" step="0.2" name="amount" value="0" id="collect-payment-input">
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+    
+    
+    </x-dashboard.modalform>
+
+
+
+
     <x-dashboard.modalform 
         route="delete_user" 
         modal_size="modal-lg" 
@@ -424,7 +473,7 @@
     
 
     <script>
-        document.addEventListener('DOMContentLoaded', function(){
+        document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('edit_modal').addEventListener('show.bs.modal', function (e){
                 let btn         = e.relatedTarget;
@@ -470,9 +519,11 @@
 
                     if(attr === 'photo') {
                         el.src = btn.getAttribute('data-' + attr); 
+                        document.getElementById('collect-photo').src = btn.getAttribute('data-' + attr);
                     } 
                     else if (attr === 'id') {
                         el.value = btn.getAttribute('data-' + attr);
+                        document.getElementById('collect-payment-id').value = btn.getAttribute('data-' + attr);
                         // console.log(el.value, btn.getAttribute('data-' + attr));
                     }
                     else if(attr == 'enroll'){
@@ -482,6 +533,8 @@
                         el.innerText = btn.getAttribute('data-' + attr) || '—';
                     }
                 });
+
+                document.getElementById('collect-fee-btn').disabled = true;
 
                 let route = "{{ route('get_enrollment_details') }}?id=" + btn.getAttribute('data-id');
                 console.log(route);
@@ -496,6 +549,15 @@
                         submit_btn.disabled = true;
                         document.getElementById('enrollment-form').classList.add('d-none');
                         document.getElementById('balance').innerText = data.balance;
+                        let payment_input = document.getElementById('collect-payment-input');
+
+                        if(data.balance > 0) {
+                            document.getElementById('collect-fee-btn').disabled = false;
+                            payment_input.max = data.balance;
+                            payment_input.min = 0;
+                            payment_input.value = data.balance;
+                        }
+                        
                     } else {
                         document.getElementById('enrollment-form').classList.remove('d-none');
 

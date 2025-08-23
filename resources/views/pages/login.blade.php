@@ -19,7 +19,7 @@
             @endif
            
             <div class="text-center mb-4">
-                <img src="{{ asset('assets/school_content/admin_small_logo/1.png') }}" alt="Logo" width="60">
+                <img src="{{ asset('assets/img/logo/logo-white.png') }}" alt="Logo" width="60">
                 <h4 class="mt-2">Welcome Back</h4>
                 <p class="text-muted small">Please login to your account</p>
             </div>

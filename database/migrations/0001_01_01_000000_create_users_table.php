@@ -106,6 +106,7 @@ return new class extends Migration
             $table->foreignId('enrollment_id')->constrained('enrollment');
             $table->foreignId('admin_id')->constrained('admin');
             $table->float('amount');
+            $table->date('date')->nullable();
         });
     }
 
