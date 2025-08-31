@@ -1,0 +1,262 @@
+
+[Ubuntu Server] - 24.0.4
+
+!!!IMPORTANT!!! - create copy of all configurations files if settings is intended to be changed.
+
+=====================================================================================================================================================================
+[commands]
+	add user to group 	- sudo usermod -a -G groupName userName
+ 	change owner		- sudo chown -R [user]:[group] [directory/file]
+	change mod		- sudo chmod -R 755 [directory/file]
+					* 755 	- Permission bits
+						7 - READ/WRITE/EXECUTE
+						6 - READ/WRITE
+						5 - READ/EXECUTE
+						4 - READ ONLY
+						3 - WRITE/EXECUTE
+						2 - WRITE ONLY
+						1 - EXECUTE ONLY
+						0 - NOT ALLOWED
+					* -R 	- Recursive	
+	net status		- netstat
+					* -t tcp -u udp -p program -l listen
+
+=====================================================================================================================================================================
+
+
+
+
+=====================================================================================================================================================================
+[Time Zone]
+	Show timezone		- timedatectl
+	List timezone		- timedatectl list-timezones
+	Set timezone		- sudo timedatectl set-timezone [timezone]		ex: sudo timedatectl set-timezone Asia/Manila
+=====================================================================================================================================================================
+
+
+
+
+=====================================================================================================================================================================
+[SSH]
+	Installing ssh-server 		- sudo apt install openssh-server
+
+	SSH Config file			- /etc/ssh/sshd_config
+
+
+	Generate ssh keys 		- Go to folder you want to store keys 
+						
+						Generate Keys 		-	ssh-keygen -t [algo] -b 4096
+						Append to auth		-	ssh-copy-id -i [keygenname] -p [ssh port] username@[host : ex:localhost]
+						Send Private key to someone you want to give access to
+					 
+	
+
+
+	* (For Ubuntu Server 22.10 or later) Changing Port
+		change port in sshd_config file
+		systemctl disable --now ssh.socket
+		systemctl enable --now ssh.service
+	
+=====================================================================================================================================================================
+
+
+=====================================================================================================================================================================
+[ftp]
+	Installing		- sudo apt-get install vsftpd
+	Configuration file	- /etc/vsftpd.conf
+	Default file dir	- /srv/ftp
+
+	Changing Home directory	- 
+				Create user 	- sudo adduser [username]
+				Change home dir	- sudo usermod -d [directory]
+				Edit con vsftpd.conf
+					add to last line - user_sub_token=$USER
+							 - local_root=[directory]
+	Using ftps		- Generate first an SSL certificate, refer to [SSL]
+					edit config file then add the rsa and private key directory 
+						ssl_enable=YES
+						rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+						rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+
+				pasv_min_port=40000 pasv_max_port=50000
+=====================================================================================================================================================================
+
+
+
+=====================================================================================================================================================================
+[apache]
+	Installing 		- sudo apt-get install apache2
+	Configuration file 	- /etc/apache2/apache2.conf
+	Web Directory 		- /var/www/
+	Virtual Host Directory 	- /etc/apache2/sites-available/
+					- add this config
+
+						<Directory [directory]>
+							AllowOverride All
+						</Directory>
+		
+
+
+	Enabling site		- sudo a2ensite example.conf
+	Disabling site		- sudo a2dissite example.conf
+	Adding SSL module	- sudo a2enmod ssl
+					Copy ssl .conf to your .conf
+	Enabling mod		- sudo a2enmod rewrite
+	
+=====================================================================================================================================================================
+
+=====================================================================================================================================================================
+[php]
+	Install 		- sudo apt-get install php
+	Configuration file	- /etc/php/[version]/apache2/php.ini
+
+
+	Enabling Dom extension	- sudo apt-get install php-xml
+
+	change this settings in php.ini				
+		post_max_size 		= >256M
+		memory_limit		= >1G
+		max_input_var		= >5000
+		max_input_time		= >300
+		max_execution_time	= >300
+=====================================================================================================================================================================
+
+
+
+=====================================================================================================================================================================
+[mysql]
+	Installing				- sudo apt-get install mysql-server
+	/etc/mysql/debian.cnf 			- mysql credentials
+	Logging/Debug				- sudo journalctl -u mysql
+	/etc/mysql/mysql.conf.d/mysqld.cnf	- mysql config (Change bind address to 0.0.0.0 to be able to access outside localhost)
+=====================================================================================================================================================================
+
+
+=====================================================================================================================================================================
+[phpmyadmin]
+
+	the following at the end of file
+Include /etc/phpmyadmin/apache.conf
+Save the file and restart using sudo service apache2 restart
+======================================================================================================================================================================
+
+
+
+======================================================================================================================================================================
+[Desktop UI]
+	* Installing GNOME 		- sudo apt-get install lubuntu-desktop
+	* Uninstalling GNOME 		- sudo apt purge lubuntu-desktop
+
+	* Installing Cinnamon 		- sudo add-apt-repository universe
+					- sudo apt-get install cinamon-desktop-environment
+
+	* Uninstalling Cinnamon		- sudo apt-get purge cinamon-desktop-environment
+					- sudo apt-get purge cinamon
+					- sudo apt-get autoremove
+
+======================================================================================================================================================================
+
+
+
+======================================================================================================================================================================
+[SSL]
+	Installing			- sudo apt-get install openssl
+	Generating Key			- openssl genrsa [encryption algo : -aes256, -des3] -out [file path : mykey.key ] 2048 
+
+						aes256			encryption algorithm
+						
+						2048			bits digest
+						
+						out			This tells OpenSSL where to place the key.
+	Generating Cert			- openssl req -new -key [file path of your key : mykey.key] -out [certificate output directory : mycert.cert]
+	
+
+	Self Sign Key			- openssl req -x509 -nodes -days [day count] -newkey rsa:2048 -keyout [key dir] -out [cert dir]
+======================================================================================================================================================================
+
+
+======================================================================================================================================================================
+[ICMP]
+	Disable Ping Request to prevent DDoS Attacks
+		- add in the in 'net.ipv4.icmp_echo_ignore_all=1' to file /etc/ufw/sysctl.conf
+		- restart ufw: sudo systemctl restart ufw
+======================================================================================================================================================================
+
+
+======================================================================================================================================================================
+[IP CONFIG]
+
+	
+	- Make static IP (/etc/netplan/99-cloud-init.yaml)
+network:
+    ethernets:
+        eno1:
+            dhcp4: false
+            addresses:
+              - 192.168.1.101/24
+            routes:
+              - to: default
+                via: 192.168.1.1
+            nameservers:
+                addresses: [1.1.1.1, 8.8.8.8]
+    version: 2
+    renderer: networkd
+======================================================================================================================================================================
+
+
+
+
+======================================================================================================================================================================
+[account]
+sudo adduser [name]
+name: [name] ex:dev
+password: [password] ex:tB681
+======================================================================================================================================================================
+https://kenhv.com/blog/securing-a-linux-server
+https://www.webhi.com/how-to/how-to-configure-ssl-tls-for-mysql-on-ubuntu-and-debian/
+======================================================================================================================================================================
+Add this to your .htaccess file in public directory
+sudo a2enmod headers
+
+
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    # 🔐 SECURITY HEADERS
+    <IfModule mod_headers.c>
+	Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self';"
+        Header always set X-Frame-Options "DENY"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set Referrer-Policy "no-referrer"
+        Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    </IfModule>
+
+    RewriteEngine On
+
+    # 🔁 Force HTTPS (optional: remove if you're already doing this in Apache conf or using Certbot)
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
