@@ -36,7 +36,7 @@
             @if (env('APP_DEBUG'))
                 const ws = new WebSocket("ws://localhost:8765");
             @else
-                const ws = new WebSocket("ws://websocket.hingaslifestyle.com");
+                const ws = new WebSocket("wss://websocket.hingaslifestyle.com");
             @endif
 
 
