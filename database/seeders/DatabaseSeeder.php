@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             'gender'    => 'other',
             'dob'       => Carbon::now()->format('Y-m-d'),
             'contactno' => '09123456789',
-            'email'     => 'admin@example.com',
+            'email'     => 'hingaslifestylestudios@gmail.com',
         ]);
 
         $role = Role::create([
@@ -39,14 +39,14 @@ class DatabaseSeeder extends Seeder
             'role_id'       => $role->id,
         ]);
 
-        $dances = ['Ballet', 'Modern Dance', 'Folk Dance', 'Gymnastics', 'Hip-Hop'];
+        // $dances = ['Ballet', 'Modern Dance', 'Folk Dance', 'Gymnastics', 'Hip-Hop'];
 
-        foreach($dances as $dance) {
-            Dance::create([
-                'name'          => $dance,
-                'session_count' => 8,
-                'price'         => 2500,
-            ]);
-        }
+        // foreach($dances as $dance) {
+        //     Dance::create([
+        //         'name'          => $dance,
+        //         'session_count' => 8,
+        //         'price'         => 2500,
+        //     ]);
+        // }
     }
 }
