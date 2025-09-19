@@ -9,7 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-
+use Illuminate\Support\Facades\Http;
 use function PHPUnit\Framework\isEmpty;
 
 class ESP32API extends Controller
@@ -21,6 +21,7 @@ class ESP32API extends Controller
 
         $rfid       = $request->input('rfid');
 
+        $post_route = env('APP_DEBUG') ? 'http://localhost:8000/rfid' : 'https://hingaslifestyle.com/rfid';
 
         if(!$rfid || $rfid == '') {
             // File::put(storage_path('logs/esp32.log'), Carbon::now()->toDateTimeString() . ' [INVALID RFID] ' . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
@@ -36,12 +37,16 @@ class ESP32API extends Controller
         // return response()->json(json_encode($enrollment));
         
         if(!$enrollment || $enrollment == null) {
+
+            $responce = Http::post($post_route, [
+                    'rfid' => $rfid,
+                ]);
             
             // File::put(storage_path('logs/esp32.log'), Carbon::now()->toDateTimeString() . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
             return  response()
                     ->json([
                         'msg' => 
-                        'No record found!'], 
+                        'No record found!' . $responce->body() ], 
                     404);
 
         }
@@ -61,6 +66,10 @@ class ESP32API extends Controller
 
             Enrollment::find($enrollment->id)
             ->update(['is_active' => 0]);
+
+            Http::post($post_route, [
+                    'rfid' => $rfid,
+                ]);
 
 
             return response()
@@ -85,7 +94,12 @@ class ESP32API extends Controller
 
 
                 
+                Http::post($post_route, [
+                    'rfid' => $rfid,
+                ]);
 
+                // Check response
+                
                 return response()
                 ->json([
                     'msg' => 'You already have session for this day'
@@ -133,7 +147,9 @@ class ESP32API extends Controller
             ->update(['is_active' => 0]);
             
         }
-
+        Http::post($post_route, [
+            'rfid' => $rfid,
+        ]);
 
         return response()
         ->json([

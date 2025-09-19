@@ -8,7 +8,7 @@ use App\Http\Controllers\Registration;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Records;
 use App\Http\Controllers\Studio;
-
+use App\Http\Controllers\RFID;
 
 Route::get('/', [AuthCtrl::class, 'index'])->name('login');
 
@@ -39,12 +39,16 @@ Route::middleware(['auth:web'])->group(function(){
 
     Route::get('/dashboard', [Dashboard::class, 'index'])->name('dashboard');
 
+    Route::get('/rfid/status', [RFID::class, 'status'])->name('status');
 
     // =================================================
     // APIS
     // =================================================
     Route::get('/registration/get_enrollment_details', [Registration::class, 'get_enrollment_details'])->name('get_enrollment_details');
-
+    Route::get('/rfid/get_latest_user', [RFID::class, 'get_latest_user'])->name('get_latest_user');
+    Route::get('/records/get_csv', [Records::class,'get_csv'])->name('get_csv');
+    Route::get('/records/get_csv_attendance', [Records::class,'get_csv_attendance'])->name('get_csv_attendance');
+    
     // ==================================================
 
 });

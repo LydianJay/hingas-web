@@ -24,8 +24,8 @@
             <div class="row">
                 @for($i = 0; $i < count($users); $i += 2)
                     @php
-                        $p1 = $users[$i];
-                        $p2 = $users[$i + 1] ?? null;
+    $p1 = $users[$i];
+    $p2 = $users[$i + 1] ?? null;
                     @endphp
 
                     {{-- First Card --}}
@@ -384,16 +384,17 @@
                 <label for="" class="form-label mt-2 mb-0">Dance</label>
                 <input type="text" name="id" hidden id="e-id" value="">
                 <div class="input-group mb-2">
-                    <select name="dance" class="form-control">
+                    <select name="dance" class="form-control" id="dance-select">
+                        <option value="">Please Select</option>
                         @foreach ($dances as $dance)
-                            <option value="{{$dance->id}}">{{$dance->name}}</option>
+                            <option data-price="{{ $dance->price }}" value="{{$dance->id}}">{{$dance->name}}</option>
                         @endforeach
                     </select>
                 </div>
                 <label for="" class="form-label mt-2 mb-0">Initial Payment</label>
 
                 <div class="input-group mb-2">
-                    <input type="number" class="form-control" step="0.2" name="payment" value="0">
+                    <input type="number" class="form-control" step="0.2" name="payment" value="0" id="initial-payment">
                 </div>
                 
             </div>
@@ -431,7 +432,7 @@
                     <input type="hidden" name="id" id="collect-payment-id">
                     <label for="" class="form-label mt-2 mb-0">Payment</label>
                     <div class="input-group mb-2">
-                        <input type="number" class="form-control" step="0.2" name="amount" value="0" id="collect-payment-input">
+                        <input type="number" class="form-control" step="0.2" max="0.1" name="amount" value="0" id="collect-payment-input">
                     </div>
                 </div>
             </div>
@@ -543,13 +544,12 @@
                 .then(data => {
                     let submit_btn = document.getElementById('modal-form-btn');
                     console.log(data);
-                    console.log(data.balance > 0);
+                    let payment_input = document.getElementById('collect-payment-input');
 
                     if(data.enrollment != null) {
                         submit_btn.disabled = true;
                         document.getElementById('enrollment-form').classList.add('d-none');
                         document.getElementById('balance').innerText = data.balance;
-                        let payment_input = document.getElementById('collect-payment-input');
 
                         if(data.balance > 0) {
                             document.getElementById('collect-fee-btn').disabled = false;
@@ -562,15 +562,15 @@
                         document.getElementById('enrollment-form').classList.remove('d-none');
                         
                         submit_btn.disabled = false;
+                        if (data.balance > 0) {
+                            document.getElementById('balance').innerText = data.balance;
+                            document.getElementById('collect-fee-btn').disabled = false;
+                            payment_input.max = data.balance;
+                            payment_input.min = 0;
+                            payment_input.value = data.balance;
+                        }
                     }
-                    // console.log(data.balance > 0);
-                    // if (data.balance > 0) {
-                    //     document.getElementById('balance').innerText        = data.balance;
-                    //     document.getElementById('collect-fee-btn').disabled = false;
-                    //     payment_input.max = data.balance;
-                    //     payment_input.min = 0;
-                    //     payment_input.value = data.balance;
-                    // }
+                    
                 })
                 .catch(error => {
                     console.error(error.message);
@@ -585,6 +585,15 @@
                 document.getElementById('delete-id').value = btn.getAttribute('data-id');
             });
 
+
+            document.getElementById('dance-select').addEventListener('change', function(){
+                const selectedOption    = this.options[this.selectedIndex];
+                const price             = selectedOption.getAttribute('data-price');
+                console.log(price);
+
+                document.getElementById('initial-payment').max = price;
+                document.getElementById('initial-payment').value = price;
+            });
         });
 
 

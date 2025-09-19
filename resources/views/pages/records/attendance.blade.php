@@ -1,6 +1,14 @@
 <x-dashboard.basecomponent>
     <div class="card-body">
         <x-dashboard.cardheader title="Attendance Records">
+            <div class="row mt-3 align-items-center pb-2 border-bottom">
+                <div class="col">
+                    
+                    <a href="{{route('get_csv_attendance')}}" class="btn btn-sm btn-outline-primary" target="_blank">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                </div>
+            </div>
         </x-dashboard.cardheader>
     
         <table class="table table-striped">
@@ -21,9 +29,9 @@
                         <td>{{ $att->rfid }}</td>
                         <td><span class="bg-success badge fw-bold fs-6">{{ $att->name }}</span></td>
                         <td>{{ $att->fname . ' ' . $att->mname . ' ' . $att->lname }}</td>
-                        <td>{{ $att->date }}</td>
-                        <td>{{ $att->time_in }}</td>
-                        <td>{{ $att->time_out ?? 'N/A' }}</td>
+                        <td>{{ date('M d, Y', strtotime($att->date)) }}</td>
+                        <td>{{ date("h:i:s A", strtotime($att->time_in)) }}</td>
+                        <td>{{ $att->time_out ? date("h:i:s A", strtotime($att->time_out)) : 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -55,5 +63,10 @@
             </li>
         </ul>
     </div>
+
+
+
+
+    
 
 </x-dashboard.basecomponent>

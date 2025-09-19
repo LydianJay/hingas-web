@@ -36,11 +36,11 @@ class Dashboard extends Controller
                                         ->orderBy('month')
                                         ->get();
 
-    $data['paymentMonths']              = $monthlyPayments->map(function ($item) {
+        $data['paymentMonths']             = $monthlyPayments->map(function ($item) {
                                             return Carbon::createFromDate($item->year, $item->month, 1)->format('M Y');
                                         });
 
-    $data['paymentTotals']              = $monthlyPayments->pluck('total');
+        $data['paymentTotals']              = $monthlyPayments->pluck('total');
 
         return view('pages.dashboard.view', $data);
 

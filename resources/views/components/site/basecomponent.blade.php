@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home</title>
+    <title>{{ config('app.app_title') }}</title>
     <link rel="shortcut icon" href="{{ asset('assets/img/logo/logo-white.png') }}" type="image/x-icon">
 
     <link href="{{ asset('assets/bootstrap/css/bootstrap_custom.css') }}" rel="stylesheet">
@@ -29,6 +29,15 @@
         .marquee-text {
             animation: marquee 16s linear infinite;
         }
+
+        .dashboard-card {
+            border: 1px solid var(--bs-gray-300);
+            border-radius: 1rem;
+            background-color: white;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
     </style>
 </head>
 

@@ -97,7 +97,7 @@ class Registration extends Controller
 
             // Create the user
             User::create([
-                'rfid'            => $validated['rfid'],
+                'rfid'            => ltrim($validated['rfid'], 0),
                 'email'           => $validated['email'],
                 'fname'           => $validated['fname'],
                 'mname'           => $validated['mname'],
@@ -181,7 +181,7 @@ class Registration extends Controller
 
 
             $user->update([
-                'rfid'            => $validated['rfid'],
+                'rfid'            => ltrim($validated['rfid'], 0),
                 'email'           => $validated['email'],
                 'fname'           => $validated['fname'],
                 'mname'           => $validated['mname'],
@@ -231,7 +231,7 @@ class Registration extends Controller
         $validated      = $request->validate([
                             'id'        => 'required', // User id
                             'dance'     => 'required',
-                            'amount'    => 'nullable' // initial payment
+                            'payment'    => 'nullable' // initial payment
                         ]);
         
         
@@ -250,21 +250,36 @@ class Registration extends Controller
         }
 
         db::beginTransaction();
-
         try {
+
+
+
 
             $enrollment = Enrollment::create([
                 'dance_id'  => $validated['dance'],
                 'user_id'   => $validated['id'],
             ]);
+            
     
-    
-            if(isset($validated['amount']) && $validated['amount'] > 0.00) {
+            if(isset($validated['payment']) && $validated['payment'] > 0) {
+                $dance_details = Dance::find($validated['dance']);
+                if($validated['payment'] > $dance_details->price) {
+                    db::rollBack();
+                    return redirect()
+                    ->route('registration')
+                    ->with('status', [
+                        'alert' => 'alert-danger',
+                        'msg'   => 'Your payment amount is greater than the price, Please try again',
+                    ]);
+                }
+
+
                 Payments::create([
                     'enrollment_id' => $enrollment->id,
                     'admin_id'      => Auth::user()->id,
                     'user_id'       => $validated['id'],
-                    'amount'        => $validated['amount'],
+                    'amount'        => $validated['payment'],
+                    'date'          => Carbon::now()->toDateString(),
                 ]);
     
             }
@@ -324,19 +339,78 @@ class Registration extends Controller
 
         try {
 
-      
+            
 
-        if(isset($validated['amount']) && $validated['amount'] > 0.00) {
+            $unpaidEnrollments  = Enrollment::select('enrollment.*')
+                                ->join('dance', 'enrollment.dance_id', '=', 'dance.id')
+                                ->leftJoin('payments', 'enrollment.id', '=', 'payments.enrollment_id')
+                                ->selectRaw('enrollment.id, enrollment.dance_id, dance.price, COALESCE(SUM(payments.amount), 0) as total_paid')
+                                ->groupBy('enrollment.id', 'enrollment.user_id', 'enrollment.dance_id', 'dance.price')
+                                ->havingRaw('total_paid < dance.price')
+                                ->get();
 
-            Payments::create([
-                'enrollment_id' => $enrolled->enrollment_id,
-                'admin_id'      => Auth::user()->id,
-                'user_id'       => $validated['id'],
-                'amount'        => $validated['amount'],
-                'date'          => Carbon::now()->toDateString(),
-            ]);
+            // dd($unpaidEnrollments);
 
-        }
+
+
+            if(isset($validated['amount']) && $validated['amount'] > 0.00) {
+                $payment = $validated['amount'];
+
+                foreach($unpaidEnrollments as $unpaid) {
+
+                    $balance = $unpaid->price - $unpaid->total_paid;
+
+                    if($payment < $balance || $payment <= 0) {
+
+
+                        if($payment > 0) {
+
+                            Payments::create([
+                                'enrollment_id' => $unpaid->id,
+                                'admin_id'      => Auth::user()->id,
+                                'user_id'       => $validated['id'],
+                                'amount'        => $payment,
+                                'date'          => Carbon::now()->toDateString(),
+                            ]);
+
+                        }
+                        
+                        $payment -= $balance;
+
+
+                        $amount     = $validated['amount'];
+                        db::commit();
+                        return redirect()
+                        ->route('registration')
+                        ->with('status', [
+                            'alert' => 'alert-success',
+                            'msg'   => "Successfuly fully/partialy paid multiple fees with the amount of $amount!",
+                        ]);
+
+                    }
+                    else {
+            
+
+
+
+                        Payments::create([
+                            'enrollment_id' => $unpaid->id,
+                            'admin_id'      => Auth::user()->id,
+                            'user_id'       => $validated['id'],
+                            'amount'        => $balance,
+                            'date'          => Carbon::now()->toDateString(),
+                        ]);
+
+                        $payment -= $balance;
+
+                    }
+
+
+                }
+
+                
+
+            }
 
 
 

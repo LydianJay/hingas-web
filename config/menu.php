@@ -72,5 +72,20 @@ return [
 
     ],
 
+
+    [
+        'menu'      => 'RFID',
+        'icon'      => 'fa-solid fa-id-card',
+        'submenu'   => [
+
+            'RFID Status' => [
+                'route' => 'status'
+            ],
+            
+
+        ],
+
+    ],
+
    
 ];

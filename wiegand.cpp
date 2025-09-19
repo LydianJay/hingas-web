@@ -73,11 +73,12 @@ int main() {
                 cout << "Card read (" << bitCount << " bits): "
                      << bitset<36>(cardData) << endl;
                 cout << "Decimal: " << cardData << endl;
-                   auto r = cpr::Post(cpr::Url{"https://entrance.lyncxus.online/api/rfid"},
-                       cpr::Payload{{"rfid", toHexString(cardData)}});
-                 if (r.status_code == 200) {
-                         std::cout << r.text << std::endl;
-                 } else {
+                auto r = cpr::Post(cpr::Url{"https://entrance.lyncxus.online/api/rfid"},
+                                   cpr::Payload{{"rfid", cardData}});
+                if (r.status_code == 200)
+                {
+                    std::cout << r.text << std::endl;
+                } else {
                         std::cout << "Error: " << r.status_code << std::endl << r.text << std::endl;
                  }
             } else {
