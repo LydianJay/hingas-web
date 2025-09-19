@@ -7,8 +7,9 @@
 
                 <div class="row">
                     <div class="col">
-                        <div class="shadow p-1 border-1" style="width: 100%;">
-                            <img src="{{ asset('assets/img/logo/logo-white.png') }}" style="width: 90%; height: 90%;">
+                        <div class="shadow p-1 border-1" style="width: 100%; height: 65vh;"> <!-- example height -->
+                            <img src="{{ asset('assets/img/logo/logo-white.png') }}"
+                                style="max-height: 100%; width: auto; display: block; margin: auto;" id="img">
                         </div>
                     </div>
 
@@ -57,6 +58,8 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data);
+                    document.getElementById('img').src = "{{asset('storage')}}/" + data.photo;
                     document.getElementById('name').innerText = data.fname + " " + data.lname;
                     document.getElementById('class').innerText = "Dance Class: " + data.name;
                     let bg = data.time_out == null ? 'bg-success' : 'bg-warning';

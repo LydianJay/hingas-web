@@ -24,8 +24,8 @@
             <div class="row">
                 @for($i = 0; $i < count($users); $i += 2)
                     @php
-    $p1 = $users[$i];
-    $p2 = $users[$i + 1] ?? null;
+                        $p1 = $users[$i];
+                        $p2 = $users[$i + 1] ?? null;
                     @endphp
 
                     {{-- First Card --}}

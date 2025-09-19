@@ -41,6 +41,9 @@ Route::middleware(['auth:web'])->group(function(){
 
     Route::get('/rfid/status', [RFID::class, 'status'])->name('status');
 
+
+
+    Route::post('/edit_user', [AuthCtrl::class,'edit_user'])->name('edit_user');
     // =================================================
     // APIS
     // =================================================

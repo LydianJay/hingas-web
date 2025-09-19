@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+use Throwable;
+use Illuminate\Support\Facades\DB;
 class AuthCtrl extends Controller
 {
     public function index() {
@@ -79,6 +81,40 @@ class AuthCtrl extends Controller
         ]);
     }
 
+    public function edit_user(Request $request) {
 
+       $validated = $request->validate([
+            'password' => 'required|confirmed|min:8',
+       ]);
+       db::beginTransaction();
+
+
+       try {
+
+            Admin::find(Auth::id())->update($validated);
+
+            // dd( Admin::find(Auth::id()));
+            
+       } catch (Throwable $e) {
+            db::rollback();
+            return redirect()
+                ->back()
+                ->with('status', [
+                    'alert' => 'alert-danger',
+                    'msg'   => $e->getMessage(),
+                ]);
+       }
+
+
+       db::commit();
+
+       return redirect()
+                ->back()
+                ->with('status', [
+                    'alert' => 'alert-info',
+                    'msg'   => 'Admin password has been updated!',
+                ]);
+       
+    }
    
 }

@@ -93,7 +93,7 @@
                             </form>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="">
+                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-admin">
                                 <i class="fa fa-user me-2"></i> Profile
                             </a>
                         </li>
@@ -160,6 +160,23 @@
             @endforeach
         });
     </script>
+
+    <x-dashboard.modalform 
+        route="edit_user" 
+        id="edit-admin" 
+        title="Edit Admin Password"
+        modal_size="modal-md"
+    >
+
+        <div class="card card-body">
+            <p class="fs-5 fw bold mb-0">Password</p>
+            <input type="password" name="password" class="form-control">
+            <p class="fs-5 fw bold mb-0">Confirm Password</p>
+            <input type="password" name="password_confirmation" class="form-control">
+
+        </div>
+
+    </x-dashboard.modalform>
 
     <!-- Choices.js -->
     <script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
