@@ -21,7 +21,7 @@ class ESP32API extends Controller
 
         $rfid       = $request->input('rfid');
 
-        $post_route = env('APP_DEBUG') ? 'http://localhost:8000/rfid' : 'https://hingaslifestyle.com/rfid';
+        $post_route = 'http://localhost:8000/rfid';
 
         if(!$rfid || $rfid == '') {
             // File::put(storage_path('logs/esp32.log'), Carbon::now()->toDateTimeString() . ' [INVALID RFID] ' . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
