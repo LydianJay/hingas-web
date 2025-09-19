@@ -93,7 +93,7 @@
 
         const ctx2 = document.getElementById('monthlyPaymentsChart').getContext('2d');
             const monthlyPaymentsChart = new Chart(ctx2, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: {!! json_encode($paymentMonths) !!},
                     datasets: [{

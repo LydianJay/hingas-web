@@ -30,6 +30,7 @@ class ESP32API extends Controller
         $enrollment = User::where('rfid', $rfid)
                     ->join('enrollment', 'enrollment.user_id', '=', 'users.id')
                     ->where('users.is_active', 1)
+                    ->where('enrollment.is_active', 1)
                     ->select( 'enrollment.dance_id', 'enrollment.id')
                     ->first();
         // return response()->json(json_encode($enrollment));
@@ -37,11 +38,11 @@ class ESP32API extends Controller
         if(!$enrollment || $enrollment == null) {
             
             // File::put(storage_path('logs/esp32.log'), Carbon::now()->toDateTimeString() . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
-            return response()
-            ->json([
-                'msg' => 
-                'No record found!'], 
-            404);
+            return  response()
+                    ->json([
+                        'msg' => 
+                        'No record found!'], 
+                    404);
 
         }
 
@@ -81,6 +82,10 @@ class ESP32API extends Controller
 
             if($dance_ses->time_out != null) {
                 // File::put(storage_path('logs/esp32_attendance.log'), Carbon::now()->toDateTimeString() . ' - ' . $rfid . PHP_EOL, FILE_APPEND);
+
+
+                
+
                 return response()
                 ->json([
                     'msg' => 'You already have session for this day'
@@ -93,6 +98,11 @@ class ESP32API extends Controller
 
             $dance_ses->time_out = Carbon::now()->format('H:i:s');
             $dance_ses->save();
+
+
+
+
+           
 
         }
         else {
@@ -108,6 +118,22 @@ class ESP32API extends Controller
 
         
         
+
+        $sesCount   = DanceSession::where('enrollment_id', $enrollment->id)
+                    ->whereNotNull('time_out')
+                    ->count();
+
+        $dance      = Dance::where('id', $enrollment->dance_id)
+                    ->select('session_count')
+                    ->first();
+
+        if($sesCount >= $dance->session_count) {
+
+            Enrollment::find($enrollment->id)
+            ->update(['is_active' => 0]);
+            
+        }
+
 
         return response()
         ->json([

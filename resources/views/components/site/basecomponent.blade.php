@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Home</title>
-    <link rel="shortcut icon" href="{{ asset('assets/school_content/admin_small_logo/1.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo/logo-white.png') }}" type="image/x-icon">
 
     <link href="{{ asset('assets/bootstrap/css/bootstrap_custom.css') }}" rel="stylesheet">
     <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.js') }}"></script>

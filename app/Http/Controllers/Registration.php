@@ -29,7 +29,10 @@ class Registration extends Controller
         $data['dances'] = Dance::all();
 
         $data['users']  = User::leftJoin('admin', 'admin.id', '=', 'users.id')
-                        ->leftJoin('enrollment', 'enrollment.id', '=', 'users.id')
+                        ->leftJoin('enrollment', function($join) {
+                            $join->on('enrollment.user_id', '=', 'users.id')
+                                ->where('enrollment.is_active', 1);
+                        })
                         ->leftJoin('dance', 'dance.id', '=', 'enrollment.dance_id')
                         ->when($search, function ($query) use ($search) {
                             $query->where(function ($subquery) use ($search) {
@@ -375,6 +378,10 @@ class Registration extends Controller
         $user->is_active = 0;
         $user->save();
 
+        Enrollment::where('user_id', $validated['id'])
+        ->update(['is_active' => 0]);
+        
+
         return redirect()->route('registration')->with('status', [
             'alert' => 'alert-warning',
             'msg'   => 'User deleted!',
@@ -404,6 +411,8 @@ class Registration extends Controller
                         ->where('enrollment.is_active', 1)
                         ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
                         ->first();
+
+
         $paid           = Enrollment::where('enrollment.user_id', $id)
                         ->leftJoin('payments', 'payments.enrollment_id', '=', 'enrollment.id')
                         ->sum('amount');

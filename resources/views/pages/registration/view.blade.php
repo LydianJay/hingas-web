@@ -24,8 +24,8 @@
             <div class="row">
                 @for($i = 0; $i < count($users); $i += 2)
                     @php
-    $p1 = $users[$i];
-    $p2 = $users[$i + 1] ?? null;
+                        $p1 = $users[$i];
+                        $p2 = $users[$i + 1] ?? null;
                     @endphp
 
                     {{-- First Card --}}
@@ -39,7 +39,7 @@
                             data-lname="{{$p1->lname}}"
                             data-mname="{{$p1->mname}}"
                             data-photo="{{$p1->photo ? asset('storage/' . $p1->photo) : asset('default-profile.png') }}"
-                            data-enroll={{ $p1->d_name ?? 'None' }}
+                            data-enroll="{{ $p1->d_name ?? 'None' }}"
                             data-rfid="{{$p1->rfid}}"
                         >
                             <div class="card-body d-flex align-items-center">
@@ -92,7 +92,7 @@
                                 data-lname="{{$p2->lname}}"
                                 data-mname="{{$p2->mname}}"
                                 data-photo="{{$p2->photo ? asset('storage/' . $p2->photo) : asset('default-profile.png') }}"
-                                data-enroll={{$p2->d_name ?? 'None'}}
+                                data-enroll="{{$p2->d_name ?? 'None'}}"
                                 data-rfid="{{$p2->rfid}}"
                             >
                                 <div class="card-body d-flex align-items-center">
@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="ms-2 text-end">
                                         @if ($p2->e_id)
-                                            <span class="badge bg-success mb-1">{{ucfirst($p1->d_name)}}</span><br>
+                                            <span class="badge bg-success mb-1">{{ucfirst($p2->d_name)}}</span><br>
                                         @endif
                                         <a class="text-primary me-2 text-decoration-none" 
                                             data-bs-toggle="modal" 
@@ -148,7 +148,6 @@
     >
 
     </x-dashboard.paginationcomponent>
-
     
     <x-dashboard.createmodal create_route="register" modal_size="modal-lg">
         <div class="row g-3">
@@ -537,7 +536,6 @@
                 document.getElementById('collect-fee-btn').disabled = true;
 
                 let route = "{{ route('get_enrollment_details') }}?id=" + btn.getAttribute('data-id');
-                console.log(route);
                 fetch(route, {
                     method: 'get',
                 })
@@ -545,6 +543,8 @@
                 .then(data => {
                     let submit_btn = document.getElementById('modal-form-btn');
                     console.log(data);
+                    console.log(data.balance > 0);
+
                     if(data.enrollment != null) {
                         submit_btn.disabled = true;
                         document.getElementById('enrollment-form').classList.add('d-none');
@@ -560,11 +560,17 @@
                         
                     } else {
                         document.getElementById('enrollment-form').classList.remove('d-none');
-
+                        
                         submit_btn.disabled = false;
                     }
-                    
-
+                    // console.log(data.balance > 0);
+                    // if (data.balance > 0) {
+                    //     document.getElementById('balance').innerText        = data.balance;
+                    //     document.getElementById('collect-fee-btn').disabled = false;
+                    //     payment_input.max = data.balance;
+                    //     payment_input.min = 0;
+                    //     payment_input.value = data.balance;
+                    // }
                 })
                 .catch(error => {
                     console.error(error.message);

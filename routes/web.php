@@ -28,7 +28,8 @@ Route::middleware(['auth:web'])->group(function(){
     Route::post('/registration/collect_fee', [Registration::class, 'collect_fee'])->name('collect_fee');
    
     Route::get('/records/attendance', [Records::class, 'attendance'])->name('attendance');
-
+    Route::get('/records/fee_collection', [Records::class, 'fee_collection'])->name('fee_collection');
+    Route::get('/records/enrollment', [Records::class, 'enrollment'])->name('enrollment');
 
     Route::get('/dance', [Studio::class, 'dance'])->name('dance');
     Route::post('/dance/create_dance', [Studio::class, 'create_dance'])->name('create_dance');

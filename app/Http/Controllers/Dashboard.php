@@ -22,7 +22,7 @@ class Dashboard extends Controller
                                         ->whereNull('admin.user_id')
                                         ->where('users.is_active', 1)
                                         ->count();
-        $data['totalEnrollments']       = Enrollment::count();
+        $data['totalEnrollments']       = Enrollment::where('is_active', 1)->count();
         $data['totalDanceSessions']     = DanceSession::count();
         $data['totalDances']            = Dance::where('is_active', 1)->count();
 

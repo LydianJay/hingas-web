@@ -28,6 +28,14 @@ return [
             'Attendance' => [
                 'route' => 'attendance'
             ],
+
+            'Enrollments' => [
+                'route' => 'enrollment'
+            ],
+
+            'Fee Collection History' => [
+                'route' => 'fee_collection'
+            ]
             
         ],
 
