@@ -66,7 +66,7 @@
         
     </div>
     <x-dashboard.paginationcomponent search="{{$search}}" page="{{$page}}" totalPages="{{$totalPages}}"
-        route="registration">
+        route="dance">
 
     </x-dashboard.paginationcomponent>
 
