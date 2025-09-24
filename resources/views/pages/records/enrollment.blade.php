@@ -9,6 +9,8 @@
                     <th>Name</th>
                     <th>Dance</th>
                     <th>Session Used</th>
+                    <th>Remaining Session</th>
+                    <th>Status</th>
                     <th>Remaining Balance</th>
                 </tr>
             </thead>
@@ -18,7 +20,13 @@
                         <td>{{ $p->fname . ' ' . $p->lname }}</td>
                         <td><span class="badge bg-info">{{$p->name}}</span></td>
                         <td>{{ $p->ses }}</td>
-                        <td class="{{$p->price - $p->paid > 0 ? 'text-danger' : 'text-success' }}">₱ {{ number_format($p->price - $p->paid, 2)}}</td>
+                        <td>{{ $p->session_count - $p->ses }}</td>
+                        <td>
+                            <span class="badge {{ $p->session_count - $p->ses > 0 ? 'bg-success' : 'bg-info' }}">
+                                {{ $p->session_count - $p->ses > 0 ? 'Active' : 'Used' }}
+                            </span>
+                        </td>
+                        <td class="fw-bold {{ $p->price - $p->paid > 0 ? 'text-danger' : 'text-success' }}">₱{{ number_format($p->price - $p->paid, 2)}}</td>
                     </tr>
                 @endforeach
             </tbody>

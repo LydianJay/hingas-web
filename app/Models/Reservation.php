@@ -4,17 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Payments extends Model
+class Reservation extends Model
 {
-    public $table = 'payments';
+    public $table = 'reservation';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'admin_id',
-        'amount',
-        'enrollment_id',
-        'res_id',
+        'reservee',
         'date',
+        'r_date',
+        'time',
+        'hours',
+        'room_id',
+        'address',
+        'contactno',
     ];
 }

@@ -72,20 +72,36 @@ return [
 
     ],
 
-
     [
-        'menu'      => 'RFID',
-        'icon'      => 'fa-solid fa-id-card',
+        'menu'      => 'Rental',
+        'icon'      => 'fa-solid fa-door-open',
         'submenu'   => [
 
-            'RFID Status' => [
-                'route' => 'status'
+            'Rooms' => [
+                'route' => 'rooms'
             ],
-            
+            'Reservation' => [
+                'route' => 'reservations'
+            ],
 
         ],
 
     ],
+
+
+    // [
+    //     'menu'      => 'RFID',
+    //     'icon'      => 'fa-solid fa-id-card',
+    //     'submenu'   => [
+
+    //         'RFID Status' => [
+    //             'route' => 'status'
+    //         ],
+            
+
+    //     ],
+
+    // ],
 
    
 ];

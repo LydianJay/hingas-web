@@ -1,6 +1,16 @@
 <x-dashboard.basecomponent>
     <div class="card-body">
         <x-dashboard.cardheader title="Payment History">
+            <div class="row">
+                <div class="col">
+                    
+                </div>
+                <div class="col">
+                    <x-dashboard.cardsearchbar search_route="fee_collection" placeholder="Juan Dela Cruz">
+            
+                    </x-dashboard.cardsearchbar>
+                </div>
+            </div>
         </x-dashboard.cardheader>
 
         <table class="table table-striped">

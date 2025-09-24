@@ -9,6 +9,7 @@ use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Records;
 use App\Http\Controllers\Studio;
 use App\Http\Controllers\RFID;
+use App\Http\Controllers\Rental;
 
 Route::get('/', [AuthCtrl::class, 'index'])->name('login');
 
@@ -36,6 +37,14 @@ Route::middleware(['auth:web'])->group(function(){
     Route::post('/dance/edit_dance', [Studio::class, 'edit_dance'])->name('edit_dance');
     Route::post('/dance/delete_dance', [Studio::class, 'delete_dance'])->name('delete_dance');
 
+    Route::get('/rental/rooms', [Rental::class, 'rooms'])->name('rooms');
+    Route::post('/rental/create_room', [Rental::class, 'create_room'])->name('create_room');
+    Route::post('/rental/edit_room', [Rental::class, 'edit_room'])->name('edit_room');
+    Route::post('/rental/delete_room', [Rental::class, 'delete_room'])->name('delete_room');
+    Route::get('/rental/reservations', [Rental::class, 'reservations'])->name('reservations');
+    Route::post('/rental/reserve_room', [Rental::class, 'reserve_room'])->name('reserve_room');
+    Route::post('/rental/edit_reserved_room', [Rental::class, 'edit_reserved_room'])->name('edit_reserved_room');
+    
 
     Route::get('/dashboard', [Dashboard::class, 'index'])->name('dashboard');
 
@@ -43,7 +52,7 @@ Route::middleware(['auth:web'])->group(function(){
 
 
 
-    Route::post('/edit_user', [AuthCtrl::class,'edit_user'])->name('edit_user');
+    Route::post('/edit_user', [AuthCtrl::class,'edit_user'])->name('edit_admin');
     // =================================================
     // APIS
     // =================================================
@@ -52,6 +61,8 @@ Route::middleware(['auth:web'])->group(function(){
     Route::get('/records/get_csv', [Records::class,'get_csv'])->name('get_csv');
     Route::get('/records/get_csv_attendance', [Records::class,'get_csv_attendance'])->name('get_csv_attendance');
     
+
+    Route::get('/rental/get_reservations', [Rental::class, 'get_reservations'])->name('get_reservations');
     // ==================================================
 
 });

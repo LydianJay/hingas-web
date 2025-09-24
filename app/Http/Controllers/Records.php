@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Payments;
 use App\Models\DanceSession;
-use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Http\Request;
@@ -51,6 +50,7 @@ class Records extends Controller
         $data       = [];
         $page       = $request->input('page', 1);
         $perPage    = 12;
+        $search     = $request->input('search');
 
 
         $payments       = Payments::join('enrollment', 'enrollment.id', '=', 'payments.enrollment_id')
@@ -63,6 +63,10 @@ class Records extends Controller
                             'dance.name',
                             'payments.date'
                         ])
+                        ->when($search, function ($q) use ($search) {
+                            $q->where('users.fname','like','%'. $search . '%')
+                            ->where('users.lname','like','%'. $search . '%');
+                        })
                         ->limit($perPage)
                         ->offset(($page - 1) * $perPage)
                         ->orderBy('date', 'desc')
@@ -73,8 +77,15 @@ class Records extends Controller
         $data['payments']   = $payments;
         $data['page']       = $page;
         $data['perPage']    = $perPage;
-        $data['count']      = Payments::count();
+        $data['count']      = Payments::when($search, function ($q) use ($search) {
+                                $q->where('users.fname','like','%'. $search . '%')
+                                ->where('users.lname','like','%'. $search . '%');
+                            })
+                            ->join('enrollment', 'enrollment.id', '=', 'payments.enrollment_id')
+                            ->join('users', 'users.id','=', 'enrollment.user_id')
+                            ->count();
         $data['totalPages'] = ceil($data['count'] / $perPage);
+        $data['search']     = $search;
 
         return view('pages.records.fee_collection', $data);
     }
@@ -86,24 +97,24 @@ class Records extends Controller
         $perPage    = 12;
 
 
-        $enrollments = User::join('enrollment', 'enrollment.user_id', '=', 'users.id')
-                    ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
-                    ->leftJoin('dance_session', 'dance_session.enrollment_id', '=', 'enrollment.id')
-                    ->leftJoin('payments', 'payments.enrollment_id', '=', 'enrollment.id')
-                    ->select([
-                        'users.fname',
-                        'users.lname',
-                        'dance.name',
-                        'dance.price',
-                        db::raw('COUNT(dance_session.id) as ses'),
-                        db::raw('SUM(payments.amount) as paid'),
+        $enrollments    = User::join('enrollment', 'enrollment.user_id', '=', 'users.id')
+                        ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
+                        ->leftJoin(DB::raw('(SELECT enrollment_id, COUNT(id) as ses FROM dance_session GROUP BY enrollment_id) ds'), 'ds.enrollment_id', '=', 'enrollment.id')
+                        ->leftJoin(DB::raw('(SELECT enrollment_id, SUM(amount) as paid FROM payments GROUP BY enrollment_id) p'), 'p.enrollment_id', '=', 'enrollment.id')
+                        ->select([
+                            'users.fname',
+                            'users.lname',
+                            'dance.name',
+                            'dance.price',
+                            'dance.session_count',
+                            DB::raw('COALESCE(ds.ses,0) as ses'),
+                            DB::raw('COALESCE(p.paid,0) as paid'),
+                        ])
+                        ->limit($perPage)
+                        ->offset(($page - 1) * $perPage)
+                        ->get();
 
-                    ])
-                    ->limit($perPage)
-                    ->offset(($page - 1) * $perPage)
-                    ->groupBy('enrollment.id')
-                    ->get();
-
+        // dd($enrollments);
 
         $data['enrollments']    = $enrollments;
         $data['page']           = $page;
@@ -112,7 +123,9 @@ class Records extends Controller
         $data['count']          = User::join('enrollment', 'enrollment.user_id', '=', 'users.id')
                                 ->join('dance', 'dance.id', '=', 'enrollment.dance_id')
                                 ->leftJoin('dance_session', 'dance_session.enrollment_id', '=', 'enrollment.id')
-                                ->count();
+                                ->distinct('enrollment.id')
+                                ->count('enrollment.id');
+
 
 
         $data['totalPages']     = ceil($data['count'] / $perPage);

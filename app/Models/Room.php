@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Payments extends Model
+class Room extends Model
 {
-    public $table = 'payments';
+    public $table = 'room';
     protected $primaryKey = 'id';
     public $timestamps = false;
     protected $fillable = [
         'id',
-        'admin_id',
-        'amount',
-        'enrollment_id',
-        'res_id',
-        'date',
+        'name',
+        'thumbnail',
+        'images',
+        'rate',
+        'is_active',
     ];
 }

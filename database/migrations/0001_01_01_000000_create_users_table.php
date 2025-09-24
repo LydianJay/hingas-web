@@ -103,7 +103,7 @@ return new class extends Migration
 
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('enrollment_id')->constrained('enrollment');
+            $table->foreignId('enrollment_id')->nullable()->constrained('enrollment');
             $table->foreignId('admin_id')->constrained('admin');
             $table->float('amount');
             $table->date('date')->nullable();

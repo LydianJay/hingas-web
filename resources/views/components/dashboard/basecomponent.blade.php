@@ -162,7 +162,7 @@
     </script>
 
     <x-dashboard.modalform 
-        route="edit_user" 
+        route="edit_admin" 
         id="edit-admin" 
         title="Edit Admin Password"
         modal_size="modal-md"

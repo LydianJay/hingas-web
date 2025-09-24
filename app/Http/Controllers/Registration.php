@@ -138,7 +138,6 @@ class Registration extends Controller
 
     public function edit(Request $request) {
 
-
         $validated = $request->validate([
             'id'             => 'required',
             'rfid'           => 'nullable|string',

@@ -18,7 +18,6 @@
                     <th>Dance Type</th>
                     <th>User</th>
                     <th>Date</th>
-
                     <th>Time In</th>
                     <th>Time Out</th>
                 </tr>
