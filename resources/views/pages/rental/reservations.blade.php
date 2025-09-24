@@ -81,11 +81,12 @@
     </div>
 
     <div class="card-footer">
-
         <ul class="pagination justify-content-between">
             <li class="page-item {{ $page <= 1 ? 'disabled' : '' }}">
-                <a href="{{ route('rooms') }}?page={{ $page - 1 }}" class="page-link">Prev</a>
+                <a href="{{ route('reservations', array_merge(request()->query(), ['page' => $page - 1])) }}"
+                    class="page-link">Prev</a>
             </li>
+    
             <li class="page-item">
                 <ul class="pagination justify-content-center">
                     @for($i = $page - 4; $i <= $page + 4; $i++)
@@ -94,17 +95,21 @@
                         @endif
 
                         <li class="page-item {{ $i == $page ? 'active' : '' }}">
-                            <a class="page-link" href="{{ route('rooms') }}?page={{ $i }}">{{ $i }}</a>
+                            <a class="page-link" href="{{ route('reservations', array_merge(request()->query(), ['page' => $i])) }}">
+                                {{ $i }}
+                            </a>
                         </li>
                     @endfor
                 </ul>
             </li>
-
+    
             <li class="page-item {{ $page >= $totalPages ? 'disabled' : '' }}">
-                <a href="{{ route('rooms') }}?page={{ $page + 1 }}" class="page-link">Next</a>
+                <a href="{{ route('reservations', array_merge(request()->query(), ['page' => $page + 1])) }}"
+                    class="page-link">Next</a>
             </li>
         </ul>
     </div>
+
 
 
 
