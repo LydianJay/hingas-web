@@ -10,7 +10,7 @@
                 </div>
                 <div class="col-6">
 
-                    <x-dashboard.cardsearchbar search_route="rooms" placeholder="Room name">
+                    <x-dashboard.cardsearchbar search_route="reservations" placeholder="Juan Dela Cruz">
 
                     </x-dashboard.cardsearchbar>
                     <form action="{{route('reservations')}}" method="GET">
