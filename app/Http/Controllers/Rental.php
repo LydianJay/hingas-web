@@ -162,6 +162,7 @@ class Rental extends Controller
         $data['res']        = Reservation::when($search, function ($query) use ($search) {
                                 $query->where('reservee','like','%'.$search.'%');
                             })
+                            ->join('room', 'room.id', '=', 'reservation.room_id')
                             ->when($date, function ($query) use ($date) {
                                 $query->whereDate('date', $date);
                             })
@@ -175,7 +176,7 @@ class Rental extends Controller
                             ->limit($perPage)
                             ->offset(($page - 1) * $perPage)
                             ->get();
-
+        // dd($data['res']);
         $data['rooms']      = Room::where('is_active', 1)->get();
         $data['page']       = $page;
         $data['perPage']    = $perPage;

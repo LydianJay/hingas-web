@@ -35,6 +35,7 @@
             <thead>
                 <tr class="text-center">
                     <th>Name</th>
+                    <th>Room</th>
                     <th>Date</th>
                     <th>Time</th>
                     <th>Hours</th>
@@ -45,6 +46,7 @@
                 @foreach($res as $r)
                     <tr class="text-center">
                         <td>{{$r->reservee}}</td>
+                        <th>{{$r->name}}</th>
                         <td>{{date('M d, Y', strtotime($r->date))}}</td>
                         <td>{{date("h:i:s A", strtotime($r->time))}}</td>
                         <td>{{$r->hours}}</td>
