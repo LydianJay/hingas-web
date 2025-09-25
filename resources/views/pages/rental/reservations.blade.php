@@ -176,7 +176,7 @@
     </x-dashboard.modalform>
 
 
-    <x-dashboard.modalform btn_id="btn-edit" route="edit_reserved_room" modal_size="modal-lg" id="edit-modal" title="Edit Room" btn_text="Edit">
+    <x-dashboard.modalform btn_id="btn-edit" route="edit_reserved_room" modal_size="modal-lg" id="edit-modal" title="Edit Reservation" btn_text="Edit">
 
         <div class="card card-body">
         
@@ -237,7 +237,7 @@
 
 
 
-    <x-dashboard.modalform route="delete_room" modal_size="modal-lg" id="confirm-delete" title="Remove Room"
+    <x-dashboard.modalform route="delete_room" modal_size="modal-lg" id="confirm-delete" title="Remove Reservation"
         btn_text="Confirm"
         btn_id="btn-delete">
         <input type="hidden" name="id" id="d-id">
