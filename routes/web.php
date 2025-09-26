@@ -43,6 +43,7 @@ Route::middleware(['auth:web'])->group(function(){
     Route::post('/rental/delete_room', [Rental::class, 'delete_room'])->name('delete_room');
     Route::get('/rental/reservations', [Rental::class, 'reservations'])->name('reservations');
     Route::post('/rental/reserve_room', [Rental::class, 'reserve_room'])->name('reserve_room');
+    Route::post('/rental/delete_reservation', [Rental::class,'delete_reservation'])->name('delete_reservation');
     Route::post('/rental/edit_reserved_room', [Rental::class, 'edit_reserved_room'])->name('edit_reserved_room');
     
 

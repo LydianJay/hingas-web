@@ -237,7 +237,7 @@
 
 
 
-    <x-dashboard.modalform route="delete_room" modal_size="modal-lg" id="confirm-delete" title="Remove Reservation"
+    <x-dashboard.modalform route="delete_reservation" modal_size="modal-lg" id="confirm-delete" title="Remove Reservation"
         btn_text="Confirm"
         btn_id="btn-delete">
         <input type="hidden" name="id" id="d-id">

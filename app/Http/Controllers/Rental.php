@@ -173,6 +173,10 @@ class Rental extends Controller
                                     ->orWhereRaw("? BETWEEN time AND DATE_ADD(time, INTERVAL hours HOUR)", [$start]); 
                                 });
                             })
+                            ->select([
+                                'reservation.*',
+                                'room.name',
+                            ])
                             ->limit($perPage)
                             ->offset(($page - 1) * $perPage)
                             ->get();
@@ -322,6 +326,44 @@ class Rental extends Controller
                     'alert' => 'alert-success',
                     'msg'   => 'Room Edited!',
                 ]);
+    }
+
+
+    public function delete_reservation(Request $request){
+
+        $validated = $request->validate([
+            'id'=> 'required',
+        ]);
+
+
+        db::beginTransaction();
+
+        try {
+
+
+            $reservation = Reservation::find($validated['id']);
+            $reservation->delete();
+
+        } catch(Throwable $e){
+
+            db::rollBack();
+            return redirect()
+            ->route('reservations')
+            ->with('status', [
+                'alert' => 'alert-danger',
+                'msg'   => $e->getMessage(),
+            ]);
+
+        }
+
+        db::commit();
+        return redirect()
+                ->route('reservations')
+                ->with('status', [
+                    'alert' => 'alert-warning',
+                    'msg'   => 'Reservation deleted',
+                ]);
+
     }
     // ========================= API =================================
 
